@@ -461,7 +461,7 @@ export default function AdminDashboard() {
                           <div key={respuesta} className="pip-col-12 pip-col-md-6" style={{ marginBottom: '16px' }}>
                             <div>
                               {/* Contexto de la Pregunta */}
-                              <div className="pip-text subtle" style={{ fontSize: '0.78em', marginBottom: '4px', textTransform: 'none', lineHeight: '1.3', opacity: 0.85 }}>
+                              <div className="pip-text highlight" style={{ fontSize: '0.9em', marginBottom: '6px', textTransform: 'none', lineHeight: '1.3' }}>
                                 PREGUNTA: {questionText}
                               </div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.85em', textTransform: 'uppercase' }}>
@@ -494,7 +494,7 @@ export default function AdminDashboard() {
                   </div>
                 ) : (
                   <div className="pip-row" style={{ marginTop: '10px' }}>
-                    {ALL_PROFILES.map(pid => {
+                    {(['ENGRANAJE', 'SUPERVISOR', 'MARTIR', 'ANOMALIA', 'FANTASMA', 'QA_SADICO'] as ProfileId[]).map(pid => {
                       const meta = OVERRIDE_PROFILE_META[pid];
                       const winner = profilingResult.profileWinners[pid];
 

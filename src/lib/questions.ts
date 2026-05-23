@@ -88,9 +88,9 @@ export const questions: Question[] = [
     id: 2,
     text: "Descubres una vulnerabilidad crítica en el sistema de calificaciones de la FCA.",
     options: [
-      { text: '[A] Guardo el exploit; podría serme muy útil para negociar en el futuro.', profileId: 'ANOMALIA' },
+      { text: '[A] Guardo el exploit; podría serme muy útil para negociar en el futuro.', profileId: 'SUPERVISOR' },
       { text: '[B] Notifico a las autoridades de la facultad por el canal oficial.', profileId: 'ENGRANAJE' },
-      { text: '[C] Me subo un punto, le bajo un punto al jefe de grupo y observo el caos.', profileId: 'QA_SADICO' },
+      { text: '[C] Me subo un punto, le bajo un punto al jefe de grupo y observo el caos.', profileId: 'ANOMALIA' },
       { text: '[D] Les aviso discretamente a los administradores y ofrezco parcharlo gratis.', profileId: 'MARTIR' }
     ]
   },
@@ -100,8 +100,8 @@ export const questions: Question[] = [
     options: [
       { text: '[A] Me niego rotundamente; la privacidad de los usuarios es inviolable.', profileId: 'MARTIR' },
       { text: '[B] Lo programo. Yo solo sigo las especificaciones que me dan.', profileId: 'ENGRANAJE' },
-      { text: '[C] Lo programo, pero hago que los datos se filtren públicamente al azar.', profileId: 'QA_SADICO' },
-      { text: '[D] Lo programo, pero me aseguro de tener una puerta trasera a esos datos.', profileId: 'ANOMALIA' }
+      { text: '[C] Lo programo, pero hago que los datos se filtren públicamente al azar.', profileId: 'ANOMALIA' },
+      { text: '[D] Lo programo, pero me aseguro de tener una puerta trasera a esos datos.', profileId: 'SUPERVISOR' }
     ]
   },
   {
@@ -121,15 +121,15 @@ export const questions: Question[] = [
       { text: '[A] Cedo mi tiempo de uso a los compañeros que van más atrasados en la materia.', profileId: 'MARTIR' },
       { text: '[B] Cambio la contraseña maestra y no se la digo a nadie.', profileId: 'QA_SADICO' },
       { text: '[C] Espero pacientemente mi turno en la lista de asignación oficial.', profileId: 'ENGRANAJE' },
-      { text: '[D] Manipulo el router para priorizar mi IP y quedarme con la conexión.', profileId: 'ANOMALIA' }
+      { text: '[D] Manipulo el router para priorizar mi IP y quedarme con la conexión.', profileId: 'FANTASMA' }
     ]
   },
   {
     id: 6,
     text: "A las 3:00 a.m., por error, borraste la tabla principal de producción.",
     options: [
-      { text: '[A] Restauro un backup en silencio y altero los logs para culpar al servidor.', profileId: 'SUPERVISOR' },
-      { text: '[B] Borro el resto de las tablas para que parezca un ciberataque ruso.', profileId: 'QA_SADICO' },
+      { text: '[A] Restauro un backup en silencio y altero los logs para culpar al servidor.', profileId: 'FANTASMA' },
+      { text: '[B] Borro el resto de las tablas para que parezca un ciberataque ruso.', profileId: 'ANOMALIA' },
       { text: '[C] Reporto el incidente inmediatamente y asumo la reprimenda.', profileId: 'ENGRANAJE' },
       { text: '[D] Llamo a todo el equipo, confieso, y pido ayuda mientras intento no entrar en pánico.', profileId: 'MARTIR' }
     ]
@@ -160,7 +160,7 @@ export const questions: Question[] = [
     options: [
       { text: '[A] Inyecto un ransomware latente en el código robado.', profileId: 'QA_SADICO' },
       { text: '[B] No es mi problema, mientras mi depósito quincenal llegue a tiempo.', profileId: 'FANTASMA' },
-      { text: '[C] Confronto al CEO en privado para exigir un porcentaje de las ganancias.', profileId: 'ANOMALIA' },
+      { text: '[C] Confronto al CEO en privado para exigir un porcentaje de las ganancias.', profileId: 'SUPERVISOR' },
       { text: '[D] Filtro la información a la comunidad, sabiendo que destruiré mi carrera.', profileId: 'MARTIR' }
     ]
   },

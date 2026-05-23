@@ -181,7 +181,7 @@ export default function MobileForm() {
           style={{ width: '120px', height: '120px', objectFit: 'contain', marginBottom: '20px' }}
         />
         <div className="pip-typewriter pip-anim-fade-in" style={{ fontSize: '1.6em', marginBottom: '15px' }}>
-          VAULT-TEC ZAX OS v1.0
+          VAULT-TEC ZAX OS v6.7
         </div>
         <div className="pip-loader-text pip-anim-fade-in pip-delay-2">INICIALIZANDO TERMINAL ZAX...</div>
         <div className="pip-loader-text pip-anim-fade-in pip-delay-4">CONECTANDO A HARDWARE PIP-UI...</div>

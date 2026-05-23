@@ -332,7 +332,7 @@ export default function AdminDashboard() {
         <header style={{ padding: '15px 20px 0', flexShrink: 0 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
             <div>
-              <h1 className="pip-text highlight" style={{ fontSize: '1.5rem', marginBottom: '3px', textTransform: 'uppercase' }}>
+              <h1 className="pip-text" style={{ fontSize: '1.5rem', marginBottom: '3px', textTransform: 'uppercase', color: 'var(--pip-green-bright)' }}>
                 ZAX Supervisor Terminal
               </h1>
               <p className="pip-text subtle" style={{ fontSize: '0.8em' }}>
@@ -613,9 +613,9 @@ export default function AdminDashboard() {
                     <p className="pip-text">Almacenamiento: <span className="pip-badge warning">78% USADO</span></p>
                     <p className="pip-text">Red: <span className={`pip-badge ${connectionStatus === 'CONNECTED' ? 'success' : 'error'}`}>{connectionStatus}</span></p>
                     <div style={{ marginTop: '15px' }}>
-                      <div className="pip-text highlight">Uso de CPU:</div>
+                      <div className="pip-text" style={{ color: 'var(--pip-green-bright)' }}>Uso de CPU:</div>
                       <div className="pip-progress-container"><div className="pip-progress-bar animated" style={{ width: '42%' }}></div></div>
-                      <div className="pip-text highlight">Memoria RAM:</div>
+                      <div className="pip-text" style={{ color: 'var(--pip-green-bright)' }}>Memoria RAM:</div>
                       <div className="pip-progress-container"><div className="pip-progress-bar animated" style={{ width: '67%' }}></div></div>
                     </div>
                   </section>

@@ -461,7 +461,7 @@ export default function AdminDashboard() {
                           <div key={respuesta} className="pip-col-12 pip-col-md-6" style={{ marginBottom: '16px' }}>
                             <div>
                               {/* Contexto de la Pregunta */}
-                              <div className="pip-text highlight" style={{ fontSize: '0.9em', marginBottom: '6px', textTransform: 'none', lineHeight: '1.3' }}>
+                              <div className="pip-text" style={{ fontSize: '0.92em', marginBottom: '6px', textTransform: 'none', lineHeight: '1.3', color: 'var(--pip-green-bright)' }}>
                                 PREGUNTA: {questionText}
                               </div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.85em', textTransform: 'uppercase' }}>

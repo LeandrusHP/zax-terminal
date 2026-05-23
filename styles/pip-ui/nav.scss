@@ -1,0 +1,120 @@
+@import "ui-variables";
+
+// Pip-Boy Sidebar
+.pip-sidebar {
+    width: 240px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: var(--pip-bg-dark);
+    border-right: 2px solid var(--pip-green-dim);
+    padding: 20px 0;
+    z-index: 4000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.collapsed {
+        transform: translateX(-100%);
+    }
+
+    @media (max-width: 768px) {
+        // transform: translateX(-100%); // This is now handled by .collapsed
+
+        &.active {
+            transform: translateX(0);
+        }
+    }
+
+    .pip-sidebar-header {
+        padding: 0 20px 20px 20px;
+        border-bottom: 1px solid rgba($pip-green-dim, 0.3);
+        margin-bottom: 20px;
+
+        .pip-logo {
+            color: var(--pip-green-bright);
+            font-weight: bold;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    }
+
+    .pip-sidebar-nav {
+        display: flex;
+        flex-direction: column;
+
+        .pip-sidebar-link {
+            padding: 12px 20px;
+            color: var(--pip-green-dim);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            &::before {
+                content: "[ ]";
+                font-size: 0.8em;
+                opacity: 0.6;
+            }
+
+            &:hover {
+                background-color: rgba($pip-green-dim, 0.1);
+                color: var(--pip-green-bright);
+                padding-left: 25px;
+            }
+
+            &.active {
+                color: var(--pip-green-bright);
+                background-color: rgba($pip-green-dim, 0.15);
+                border-left-color: var(--pip-green-bright);
+
+                &::before {
+                    content: "[*]";
+                    color: var(--pip-green-bright);
+                }
+            }
+        }
+    }
+}
+
+// Enhanced Tabs v2
+.pip-tabs {
+    .pip-tab {
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--pip-green-bright);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        &.active::after {
+            transform: scaleX(1);
+        }
+    }
+}
+
+// Global Layout helper for sidebar
+.pip-with-sidebar {
+    padding-left: 240px;
+    transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.full-width {
+        padding-left: 0;
+    }
+
+    @media (max-width: 768px) {
+        padding-left: 0;
+    }
+}

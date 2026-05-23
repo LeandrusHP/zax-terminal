@@ -1,0 +1,60 @@
+.pip-alert {
+    padding: $component-padding;
+    border: 1px solid $base-border-color;
+    background-color: rgba(#052308, 0.95);
+    margin-bottom: $component-padding;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background-color: var(--pip-green-dim);
+    }
+
+    .pip-alert-title {
+        display: block;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        color: var(--pip-green-bright);
+        font-size: 1.1em;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.95em;
+    }
+
+    // Variants
+    &.warning {
+        border-color: var(--pip-green-dim);
+
+        &::before {
+            background-color: var(--pip-green-bright);
+        }
+    }
+
+    &.error {
+        border-color: var(--pip-green-bright);
+        box-shadow: inset 0 0 10px rgba($text-color-selected, 0.1);
+
+        &::before {
+            background-color: var(--pip-green-bright);
+        }
+
+        .pip-alert-title {
+            text-shadow: 0 0 5px var(--pip-green-bright);
+        }
+    }
+
+    &.success {
+        &::before {
+            opacity: 0.5;
+        }
+    }
+}

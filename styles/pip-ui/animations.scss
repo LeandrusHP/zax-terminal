@@ -1,0 +1,111 @@
+@import "ui-variables";
+
+// Typewriter Effect
+.pip-typewriter {
+    display: inline-block;
+    overflow: hidden;
+    border-right: 2px solid var(--pip-green-bright);
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: 0.15em;
+    animation:
+        pip-typing 3.5s steps(40, end),
+        pip-blink-cursor 0.75s step-end infinite;
+}
+
+@keyframes pip-typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes pip-blink-cursor {
+
+    from,
+    to {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: var(--pip-green-bright);
+    }
+}
+
+// Phosphor Persistence (Ghosting)
+.pip-ghosting {
+    text-shadow:
+        0 0 1px rgba(28, 250, 128, 0.5),
+        0 0 2px rgba(28, 250, 128, 0.3);
+    position: relative;
+
+    &::after {
+        content: attr(data-text);
+        position: absolute;
+        left: 1px;
+        top: 1px;
+        opacity: 0.1;
+        z-index: -1;
+        pointer-events: none;
+    }
+}
+
+// System Boot Sequence Animation
+.pip-anim-fade-in {
+    animation: pip-fade-in 0.5s ease-out forwards;
+}
+
+@keyframes pip-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Delay utilities for sequential boot
+@for $i from 1 through 10 {
+    .pip-delay-#{$i} {
+        animation-delay: #{$i * 0.2}s;
+    }
+}
+
+// Screen Jitter (CRT Hardware Feedback)
+.pip-anim-jitter {
+    animation: pip-jitter 0.15s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes pip-jitter {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    15% {
+        transform: translate(-1px, 1px) rotate(-0.1deg);
+    }
+
+    30% {
+        transform: translate(-2px, -1px) rotate(0.1deg);
+    }
+
+    45% {
+        transform: translate(2px, 1px);
+    }
+
+    60% {
+        transform: translate(1px, -1px) rotate(-0.1deg);
+    }
+
+    75% {
+        transform: translate(-1px, 2px);
+    }
+}

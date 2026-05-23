@@ -1,0 +1,37 @@
+// Progress
+// -------------------
+
+// The `progress` element is unstyled and defined by the OS.
+// See https://css-tricks.com/html5-progress-element/ in case you want to customize it.
+
+
+@mixin loading-spinner($size) {
+  display: block;
+  width: $size;
+  height: $size;
+  // background-image: url(images/octocat-spinner-128.gif);
+  background-repeat: no-repeat;
+  background-size: $size $size;
+
+  &.inline-block {
+    display: inline-block;
+  }
+}
+
+// Spinner -------------------
+
+.loading-spinner-large {
+  @include loading-spinner(64px);
+}
+
+.loading-spinner-medium {
+  @include loading-spinner(48px);
+}
+
+.loading-spinner-small {
+  @include loading-spinner(32px);
+}
+
+.loading-spinner-tiny {
+  @include loading-spinner(16px);
+}

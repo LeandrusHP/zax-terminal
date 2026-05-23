@@ -1,26 +1,127 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ====================================
+   ZAX TERMINAL - CRT OVERRIDES
+   All visual weight comes from pip-ui SCSS.
+   This file only patches what pip-ui doesn't cover
+   or what needs runtime correction.
+   ==================================== */
+
+/* Force Roboto Mono everywhere */
+body, html {
+  height: 100%;
+  overflow-x: hidden;
+  font-family: 'Roboto Mono', monospace !important;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ---- CRT Scanline + Glow Simulation ---- */
+.pip-crt::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.pip-crt::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9997;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+/* ---- Phosphorus-correct Progress Bar ---- */
+.pip-progress-bar.animated::after {
+  background-image: linear-gradient(
+    -45deg,
+    rgba(12, 131, 61, 0.3) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(12, 131, 61, 0.3) 50%,
+    rgba(12, 131, 61, 0.3) 75%,
+    transparent 75%,
+    transparent
+  ) !important;
+}
+
+/* ---- Vault Boy Monochrome CRT Filter ---- */
+.vault-boy-img {
+  filter: sepia(100%) hue-rotate(80deg) saturate(500%) brightness(0.7) contrast(1.4);
+  opacity: 0.9;
+}
+
+/* ---- Pip-Boy Hardware Frame ---- */
+.pip-frame {
+  border: 3px solid var(--pip-green-dim);
+  position: relative;
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(12, 131, 61, 0.3);
+}
+
+.pip-frame::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  border: 1px solid rgba(12, 131, 61, 0.2);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---- Screen flicker on tab change ---- */
+@keyframes screen-flicker {
+  0%   { opacity: 1; }
+  5%   { opacity: 0.6; }
+  10%  { opacity: 1; }
+  15%  { opacity: 0.85; }
+  20%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+.pip-screen-flicker {
+  animation: screen-flicker 0.3s ease-out;
+}
+
+/* ---- Tab active glow reinforcement ---- */
+.pip-tabs .pip-tab.active {
+  text-shadow: 0 0 8px rgba(28, 250, 128, 0.6);
+}
+
+/* ---- Mobile-first content padding fix ---- */
+@media (max-width: 640px) {
+  .pip-container {
+    padding: 8px !important;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  .pip-panel {
+    padding: 8px !important;
+  }
+  .pip-radio-container {
+    padding-left: 30px;
+    font-size: 0.85em;
+    line-height: 1.4;
+  }
 }

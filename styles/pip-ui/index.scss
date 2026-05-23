@@ -1,0 +1,32 @@
+// UI Theme
+// -------------------
+
+// This is the main file that imports all the Less files from the `/styles` directory.
+
+// For more infos about creating themes, check out:
+// http://flight-manual.atom.io/hacking-atom/sections/creating-a-theme
+
+@import "ui-variables";
+
+@import "base";
+@import "buttons";
+@import "lists";
+@import "panels";
+@import "progress";
+@import "tabs";
+@import "text";
+@import "alerts";
+@import "loaders";
+@import "animations";
+@import "nav";
+@import "web-base";
+
+// Legacy Atom Theme Support (Not included in modern web build)
+// @import "legacy/editor";
+// @import "legacy/find-and-replace";
+// @import "legacy/git";
+// @import "legacy/key-binding";
+// @import "legacy/sites";
+// @import "legacy/status-bar";
+// @import "legacy/tooltips";
+// @import "legacy/tree-view";

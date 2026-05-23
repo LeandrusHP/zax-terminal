@@ -1,0 +1,109 @@
+// UI Variables
+// -------------------
+
+// These are the official UI variables that every UI theme should define.
+// It allows other packages to match your theme.
+
+// Overrides: atom/static/variables/ui-variables.less
+
+// Try to edit some of the values below to see your theme change.
+// A good start is to change the color of the `$base-background-color` variable.
+
+
+//* Pip UI Source Palette (SCSS) */
+$pip-green-dim: #0c833d;
+$pip-green-bright: #1cfa80;
+$pip-bg-dark: #052308;
+$pip-bg-very-dark: #001100;
+$pip-bg-button: #213721;
+$pip-bg-input: #1c4221;
+
+// CSS Custom Properties (Exposed for runtime overrides)
+//      <span class="pip-tooltip-text">Sufficient for all Terminal OS applications</span>
+:root {
+    --pip-green-dim: #{$pip-green-dim};
+    --pip-green-bright: #{$pip-green-bright};
+    --pip-bg-dark: #{$pip-bg-dark};
+    --pip-bg-very-dark: #{$pip-bg-very-dark};
+    --pip-bg-button: #{$pip-bg-button};
+    --pip-bg-input: #{$pip-bg-input};
+
+    --pip-font-family: '.SFNSText-Regular', 'SF UI Text', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;
+    --pip-border-radius: 2px;
+    --pip-padding: 10px;
+}
+
+// Text Colors
+$text-color: $pip-green-dim;
+$text-color-subtle: $pip-green-dim;
+$text-color-highlight: $pip-green-dim;
+$text-color-selected: $pip-green-bright;
+
+$text-color-info: $pip-green-bright;
+$text-color-success: $pip-green-bright;
+$text-color-warning: $pip-green-bright;
+$text-color-error: $pip-green-bright;
+
+// Background colors
+$background-color-info: #063315;
+$background-color-success: #063315;
+$background-color-warning: #063315;
+$background-color-error: #063315;
+
+$background-color-highlight: $pip-green-dim;
+$background-color-selected: #3b5c3b;
+$app-background-color: $pip-bg-dark;
+
+// Base colors
+$base-background-color: $pip-bg-dark;
+$base-border-color: $pip-green-dim;
+
+// Component colors
+$pane-item-background-color: $pip-bg-dark;
+$pane-item-border-color: $pip-green-dim;
+
+$input-background-color: $pip-bg-input;
+$input-border-color: $pip-green-dim;
+
+$tool-panel-background-color: $pip-bg-very-dark;
+$tool-panel-border-color: $pip-green-dim;
+
+$inset-panel-background-color: $pip-green-dim;
+$inset-panel-border-color: $pip-green-dim;
+
+$panel-heading-background-color: $pip-green-dim;
+$panel-heading-border-color: $base-border-color;
+
+$overlay-background-color: lighten($pip-bg-dark, 5%);
+$overlay-border-color: $base-border-color;
+
+$button-background-color: $pip-bg-button;
+$button-background-color-hover: lighten($pip-bg-button, 5%);
+$button-background-color-selected: $button-background-color-hover;
+$button-border-color: #063315;
+
+$tab-bar-background-color: $base-background-color;
+$tab-bar-border-color: $base-border-color;
+$tab-background-color: $tab-bar-background-color;
+$tab-background-color-active: lighten($tab-bar-background-color, 5%);
+$tab-border-color: $base-border-color;
+
+$tree-view-background-color: $base-background-color;
+$tree-view-border-color: $base-border-color;
+
+// Sizes
+$font-size: 12px;
+$input-font-size: 14px;
+
+$disclosure-arrow-size: 12px;
+
+$component-padding: 10px;
+$component-icon-padding: 5px;
+$component-icon-size: 16px;
+$component-line-height: 25px;
+
+$tab-height: 30px;
+
+// Misc
+$component-border-radius: 2px;
+$font-family: '.SFNSText-Regular', 'SF UI Text', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif;

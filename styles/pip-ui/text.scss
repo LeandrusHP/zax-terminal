@@ -1,0 +1,69 @@
+// Text
+// -------------------
+
+.text-smaller {
+  font-size: smaller;
+}
+
+.text-subtle {
+  color: $text-color-subtle;
+}
+
+.text-highlight {
+  color: $text-color-highlight;
+}
+
+.text-info {
+  color: $text-color-info;
+}
+
+.text-success {
+  color: $text-color-success;
+}
+
+.text-warning {
+  color: $text-color-warning;
+}
+
+.text-error {
+  color: $text-color-error;
+}
+
+
+// Highlights ---------------
+
+@mixin highlight-mixin($color) {
+  padding: 1px 4px;
+  color: $text-color-highlight;
+  border-radius: $component-border-radius;
+  background-color: $color;
+}
+
+.highlight {
+  @include highlight-mixin($background-color-highlight);
+}
+
+.highlight-info {
+  @include highlight-mixin($background-color-info);
+}
+
+.highlight-warning {
+  @include highlight-mixin($background-color-warning);
+}
+
+.highlight-error {
+  @include highlight-mixin($background-color-error);
+}
+
+.highlight-success {
+  @include highlight-mixin($background-color-success);
+}
+
+
+// Background Message ---------------
+// Shown when no tabs are open.
+
+.background-message {
+  font-weight: bold;
+  color: $text-color-subtle;
+}

@@ -1,0 +1,70 @@
+@import "ui-variables";
+
+.pip-loader {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--pip-font-family);
+    color: var(--pip-green-dim);
+    text-transform: uppercase;
+    font-weight: bold;
+
+    &::after {
+        content: "";
+        width: 12px;
+        height: 18px;
+        background-color: var(--pip-green-bright);
+        animation: pip-blink 0.8s step-end infinite;
+    }
+
+    &.block {
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+        border: 1px dashed var(--pip-green-dim);
+    }
+}
+
+@keyframes pip-blink {
+
+    from,
+    to {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+// Full screen overlay loader
+.pip-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--pip-bg-dark);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+
+    .pip-loader-text {
+        animation: pip-pulse 2s ease-in-out infinite;
+    }
+}
+
+@keyframes pip-pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}

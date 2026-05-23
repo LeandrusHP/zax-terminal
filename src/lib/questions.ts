@@ -179,6 +179,8 @@ export const questions: Question[] = [
 // ─── Utilidad de Lookup y Puntajes Máximos ──────────────────
 // Mapea texto de respuesta → profileId para resolución en O(1)
 const _answerLookup = new Map<string, ProfileId>();
+// Mapea texto de respuesta → texto de la pregunta para resolución en O(1)
+const _questionTextLookup = new Map<string, string>();
 
 // Calcula dinámicamente los puntajes máximos por perfil para normalización
 export const PROFILE_MAX_SCORES: Record<ProfileId, number> = {
@@ -188,12 +190,17 @@ export const PROFILE_MAX_SCORES: Record<ProfileId, number> = {
 questions.forEach(q => {
   q.options.forEach(opt => {
     _answerLookup.set(opt.text, opt.profileId);
+    _questionTextLookup.set(opt.text, q.text);
     PROFILE_MAX_SCORES[opt.profileId]++;
   });
 });
 
 export function getProfileIdFromAnswer(answerText: string): ProfileId | null {
   return _answerLookup.get(answerText) ?? null;
+}
+
+export function getQuestionTextFromAnswer(answerText: string): string | null {
+  return _questionTextLookup.get(answerText) ?? null;
 }
 
 // ─── Lista ordenada de ProfileIds para iteración y Desempate ──

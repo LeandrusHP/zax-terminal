@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { getProfileIdFromAnswer, ALL_PROFILES, PROFILE_MAX_SCORES, type ProfileId } from '@/lib/questions';
+import { getProfileIdFromAnswer, ALL_PROFILES, PROFILE_MAX_SCORES, type ProfileId, getQuestionTextFromAnswer } from '@/lib/questions';
 
 // Base de Datos Definitiva de Perfiles Psicológicos v3.2 (Inyectada según Directiva)
 const OVERRIDE_PROFILE_META: Record<ProfileId, {
@@ -456,9 +456,14 @@ export default function AdminDashboard() {
                       .slice(0, 12)
                       .map(([respuesta, count]) => {
                         const percentage = totalAnswers === 0 ? 0 : Math.round((count / totalAnswers) * 100);
+                        const questionText = getQuestionTextFromAnswer(respuesta) || 'Pregunta no identificada';
                         return (
-                          <div key={respuesta} className="pip-col-12 pip-col-md-6">
-                            <div style={{ marginBottom: '12px' }}>
+                          <div key={respuesta} className="pip-col-12 pip-col-md-6" style={{ marginBottom: '16px' }}>
+                            <div>
+                              {/* Contexto de la Pregunta */}
+                              <div className="pip-text subtle" style={{ fontSize: '0.78em', marginBottom: '4px', textTransform: 'none', lineHeight: '1.3', opacity: 0.85 }}>
+                                PREGUNTA: {questionText}
+                              </div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.85em', textTransform: 'uppercase' }}>
                                 <span className="pip-text" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }} title={respuesta}>{respuesta}</span>
                                 <span className="pip-text selected" style={{ flexShrink: 0 }}>{percentage}% <span className="pip-badge outline" style={{ fontSize: '0.8em' }}>{count}</span></span>

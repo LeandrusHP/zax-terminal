@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { getProfileIdFromAnswer, ALL_PROFILES, type ProfileId } from '@/lib/questions';
+import { getProfileIdFromAnswer, ALL_PROFILES, PROFILE_MAX_SCORES, type ProfileId } from '@/lib/questions';
 
 // Base de Datos Definitiva de Perfiles Psicológicos v3.2 (Inyectada según Directiva)
 const OVERRIDE_PROFILE_META: Record<ProfileId, {
@@ -84,8 +84,8 @@ type ProfileWinner = {
 } | null;
 
 // ═══════════════════════════════════════════════════════════
-// MOTOR DE PERFILADO PSICOLÓGICO ZAX v3.0
-// Cruza respuestas con pesos ocultos del banco de preguntas
+// MOTOR DE PERFILADO PSICOLÓGICO ZAX v3.3
+// Cruza respuestas con pesos ocultos del banco de preguntas y normaliza
 // ═══════════════════════════════════════════════════════════
 function computeProfiles(rawResponses: RawResponse[]): {
   subjectProfiles: SubjectProfile[];
@@ -97,6 +97,7 @@ function computeProfiles(rawResponses: RawResponse[]): {
     sujeto_id: string;
     identificador: string;
     scores: Record<ProfileId, number>;
+    rawScores: Record<ProfileId, number>;
     totalAnswers: number;
   }> = {};
 
@@ -110,6 +111,10 @@ function computeProfiles(rawResponses: RawResponse[]): {
           ENGRANAJE: 0, SUPERVISOR: 0, MARTIR: 0,
           ANOMALIA: 0, FANTASMA: 0, QA_SADICO: 0
         },
+        rawScores: {
+          ENGRANAJE: 0, SUPERVISOR: 0, MARTIR: 0,
+          ANOMALIA: 0, FANTASMA: 0, QA_SADICO: 0
+        },
         totalAnswers: 0
       };
     }
@@ -117,17 +122,23 @@ function computeProfiles(rawResponses: RawResponse[]): {
     // Resolver perfil oculto de la respuesta
     const profileId = getProfileIdFromAnswer(r.respuesta);
     if (profileId) {
-      subjectMap[sId].scores[profileId] += 1;
+      subjectMap[sId].rawScores[profileId] += 1;
       subjectMap[sId].totalAnswers += 1;
     }
   }
 
-  // Paso 2: Determinar perfil dominante por sujeto
+  // Paso 2: Determinar perfil dominante por sujeto con normalización y tie-breaker
   const subjectProfiles: SubjectProfile[] = Object.values(subjectMap).map(s => {
     let maxScore = -1;
-    let dominant: ProfileId = 'ENGRANAJE';
+    let dominant: ProfileId = 'ENGRANAJE'; // Fallback
 
-    // Iterar en orden fijo del enum para tiebreaker determinista
+    // Normalizar a porcentaje de afinidad basado en el máximo posible
+    for (const pid of ALL_PROFILES) {
+      const maxPossible = PROFILE_MAX_SCORES[pid];
+      s.scores[pid] = maxPossible > 0 ? (s.rawScores[pid] / maxPossible) * 100 : 0;
+    }
+
+    // Iterar en el orden estricto de ALL_PROFILES (de mayor a menor caos para Tie-breaker)
     for (const pid of ALL_PROFILES) {
       if (s.scores[pid] > maxScore) {
         maxScore = s.scores[pid];
@@ -135,7 +146,13 @@ function computeProfiles(rawResponses: RawResponse[]): {
       }
     }
 
-    return { ...s, dominantProfile: dominant };
+    return { 
+      sujeto_id: s.sujeto_id,
+      identificador: s.identificador,
+      scores: s.scores,
+      totalAnswers: s.totalAnswers,
+      dominantProfile: dominant 
+    };
   });
 
   // Paso 3: Para cada perfil, encontrar al sujeto con mayor puntuación
@@ -153,7 +170,7 @@ function computeProfiles(rawResponses: RawResponse[]): {
         bestScore = s.scores[pid];
         winner = {
           identificador: s.identificador,
-          score: s.scores[pid],
+          score: Math.round(s.scores[pid]), // Usar el porcentaje redondeado
           totalAnswers: s.totalAnswers
         };
       }
@@ -188,90 +205,98 @@ export default function AdminDashboard() {
     setFlickerKey(prev => prev + 1);
   }, []);
 
-  // Realtime subscriptions
+  // Realtime subscriptions & Initial Fetch with Concurrency Fixes
   useEffect(() => {
-    fetchInitialData();
+    let isMounted = true;
+    let sujetosSubscription: ReturnType<typeof supabase.channel> | null = null;
+    let respuestasSubscription: ReturnType<typeof supabase.channel> | null = null;
 
-    const sujetosSubscription = supabase
-      .channel('sujetos-changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sujetos' }, (payload) => {
-        setStats(prev => ({
-          ...prev,
-          total: prev.total + 1,
-          latest: [payload.new as Sujeto, ...prev.latest].slice(0, 15)
-        }));
-      })
-      .subscribe();
+    const init = async () => {
+      // 1. Obtener datos iniciales completos (SIN LÍMITE) para asegurar el caché
+      const { data: sujetos, count } = await supabase
+        .from('sujetos')
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false });
 
-    const respuestasSubscription = supabase
-      .channel('respuestas-changes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'respuestas' }, (payload) => {
-        setStats(prev => {
-          const answer = payload.new.respuesta;
-          const sujetoId = payload.new.sujeto_id;
+      const { data: respuestasData } = await supabase
+        .from('respuestas')
+        .select('sujeto_id, respuesta, sujetos (identificador)');
 
-          const matchingSujeto = prev.latest.find(s => s.id === sujetoId);
-          const identificador = matchingSujeto ? matchingSujeto.identificador : 'Morador';
+      if (!isMounted) return;
 
-          const newRawResponse: RawResponse = {
-            sujeto_id: sujetoId,
-            respuesta: answer,
-            identificador: identificador
-          };
+      const breakdown: Record<string, number> = {};
+      const rawResponses: RawResponse[] = [];
 
-          return {
-            ...prev,
-            answersBreakdown: {
-              ...prev.answersBreakdown,
-              [answer]: (prev.answersBreakdown[answer] || 0) + 1
-            },
-            rawResponses: [...prev.rawResponses, newRawResponse]
-          };
+      respuestasData?.forEach(r => {
+        const respVal = r.respuesta;
+        breakdown[respVal] = (breakdown[respVal] || 0) + 1;
+        rawResponses.push({
+          sujeto_id: r.sujeto_id,
+          respuesta: respVal,
+          identificador: (r.sujetos as any)?.identificador || 'Desconocido'
         });
-      })
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') setConnectionStatus('CONNECTED');
-        else if (status === 'CHANNEL_ERROR') setConnectionStatus('ERROR');
       });
 
+      setStats({
+        total: count || 0,
+        latest: sujetos || [],
+        answersBreakdown: breakdown,
+        rawResponses: rawResponses
+      });
+
+      // 2. Suscribirse DESPUÉS de hidratar el estado base para evitar race condition
+      sujetosSubscription = supabase
+        .channel('sujetos-changes')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sujetos' }, (payload) => {
+          setStats(prev => ({
+            ...prev,
+            total: prev.total + 1,
+            latest: [payload.new as Sujeto, ...prev.latest]
+          }));
+        })
+        .subscribe();
+
+      respuestasSubscription = supabase
+        .channel('respuestas-changes')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'respuestas' }, (payload) => {
+          setStats(prev => {
+            const answer = payload.new.respuesta;
+            const sujetoId = payload.new.sujeto_id;
+
+            const matchingSujeto = prev.latest.find(s => s.id === sujetoId);
+            const identificador = matchingSujeto ? matchingSujeto.identificador : 'Morador';
+
+            const newRawResponse: RawResponse = {
+              sujeto_id: sujetoId,
+              respuesta: answer,
+              identificador: identificador
+            };
+
+            return {
+              ...prev,
+              answersBreakdown: {
+                ...prev.answersBreakdown,
+                [answer]: (prev.answersBreakdown[answer] || 0) + 1
+              },
+              rawResponses: [...prev.rawResponses, newRawResponse]
+            };
+          });
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') setConnectionStatus('CONNECTED');
+          else if (status === 'CHANNEL_ERROR') setConnectionStatus('ERROR');
+        });
+    };
+
+    init();
+
     return () => {
-      supabase.removeChannel(sujetosSubscription);
-      supabase.removeChannel(respuestasSubscription);
+      isMounted = false;
+      if (sujetosSubscription) supabase.removeChannel(sujetosSubscription);
+      if (respuestasSubscription) supabase.removeChannel(respuestasSubscription);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const fetchInitialData = async () => {
-    const { data: sujetos, count } = await supabase
-      .from('sujetos')
-      .select('*', { count: 'exact' })
-      .order('created_at', { ascending: false })
-      .limit(15);
-
-    const { data: respuestasData } = await supabase
-      .from('respuestas')
-      .select('sujeto_id, respuesta, sujetos (identificador)');
-
-    const breakdown: Record<string, number> = {};
-    const rawResponses: RawResponse[] = [];
-
-    respuestasData?.forEach(r => {
-      const respVal = r.respuesta;
-      breakdown[respVal] = (breakdown[respVal] || 0) + 1;
-      rawResponses.push({
-        sujeto_id: r.sujeto_id,
-        respuesta: respVal,
-        identificador: (r.sujetos as any)?.identificador || 'Desconocido'
-      });
-    });
-
-    setStats({
-      total: count || 0,
-      latest: sujetos || [],
-      answersBreakdown: breakdown,
-      rawResponses: rawResponses
-    });
-  };
 
   const handlePurge = async () => {
     if (window.confirm("¿Autoriza la aniquilación de todos los registros de los moradores?")) {
@@ -295,9 +320,9 @@ export default function AdminDashboard() {
     }
   };
 
-  // ─── Computar Perfiles en Tiempo Real ──────────────────
-  const totalAnswers = Object.values(stats.answersBreakdown).reduce((a, b) => a + b, 0);
-  const profilingResult = computeProfiles(stats.rawResponses);
+  // ─── Computar Perfiles en Tiempo Real (Memoizado) ──────────
+  const totalAnswers = useMemo(() => Object.values(stats.answersBreakdown).reduce((a, b) => a + b, 0), [stats.answersBreakdown]);
+  const profilingResult = useMemo(() => computeProfiles(stats.rawResponses), [stats.rawResponses]);
 
   return (
     <div style={{ display: 'flex', alignItems: 'stretch', justifyContent: 'center', minHeight: '100vh', padding: '12px' }}>
@@ -538,12 +563,12 @@ export default function AdminDashboard() {
                                   {winner.identificador}
                                 </div>
                                 <div className="pip-text subtle" style={{ fontSize: '0.75em', marginTop: '6px' }}>
-                                  Afinidad: {winner.score} / {winner.totalAnswers} respuestas
+                                  Afinidad Calculada: {winner.score}% ({winner.totalAnswers} respuestas)
                                 </div>
                                 <div className="pip-progress-container" style={{ marginTop: '6px', marginBottom: 0 }}>
                                   <div
                                     className="pip-progress-bar animated"
-                                    style={{ width: `${winner.totalAnswers > 0 ? Math.round((winner.score / winner.totalAnswers) * 100) : 0}%` }}
+                                    style={{ width: `${winner.score}%` }}
                                   ></div>
                                 </div>
                               </div>

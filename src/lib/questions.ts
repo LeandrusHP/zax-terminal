@@ -176,12 +176,19 @@ export const questions: Question[] = [
   }
 ];
 
-// ─── Utilidad de Lookup ────────────────────────────────────
+// ─── Utilidad de Lookup y Puntajes Máximos ──────────────────
 // Mapea texto de respuesta → profileId para resolución en O(1)
 const _answerLookup = new Map<string, ProfileId>();
+
+// Calcula dinámicamente los puntajes máximos por perfil para normalización
+export const PROFILE_MAX_SCORES: Record<ProfileId, number> = {
+  ENGRANAJE: 0, SUPERVISOR: 0, MARTIR: 0, ANOMALIA: 0, FANTASMA: 0, QA_SADICO: 0
+};
+
 questions.forEach(q => {
   q.options.forEach(opt => {
     _answerLookup.set(opt.text, opt.profileId);
+    PROFILE_MAX_SCORES[opt.profileId]++;
   });
 });
 
@@ -189,7 +196,9 @@ export function getProfileIdFromAnswer(answerText: string): ProfileId | null {
   return _answerLookup.get(answerText) ?? null;
 }
 
-// ─── Lista ordenada de ProfileIds para iteración ───────────
+// ─── Lista ordenada de ProfileIds para iteración y Desempate ──
+// El orden define la prioridad estricta en caso de empate matemático
+// Prioridad: Mayor caos / destructividad hacia menor caos
 export const ALL_PROFILES: ProfileId[] = [
-  'ENGRANAJE', 'SUPERVISOR', 'MARTIR', 'ANOMALIA', 'FANTASMA', 'QA_SADICO'
+  'ANOMALIA', 'QA_SADICO', 'SUPERVISOR', 'FANTASMA', 'MARTIR', 'ENGRANAJE'
 ];
